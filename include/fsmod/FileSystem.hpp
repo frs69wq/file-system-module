@@ -33,7 +33,7 @@ namespace simgrid::fsmod {
         FileSystemNetZoneImplExtension& operator=(const FileSystemNetZoneImplExtension&) = delete;
 
         void register_file_system(const std::shared_ptr<FileSystem>& fs);
-        std::map<std::string, std::shared_ptr<FileSystem>, std::less<>> get_all_file_systems() { return file_systems_;}
+        const std::map<std::string, std::shared_ptr<FileSystem>, std::less<>>& get_all_file_systems() const { return file_systems_;}
     };
 
     /**
@@ -48,7 +48,7 @@ namespace simgrid::fsmod {
 
 
         static std::shared_ptr<FileSystem> create(const std::string &name, int max_num_open_files = 1024);
-        static std::map<std::string, std::shared_ptr<FileSystem>, std::less<>> get_file_systems_by_actor(s4u::ActorPtr actor);
+        static const std::map<std::string, std::shared_ptr<FileSystem>, std::less<>>& get_file_systems_by_actor(s4u::ActorPtr actor);
         static void register_file_system(s4u::NetZone* netzone, std::shared_ptr<FileSystem> fs);
 
         /**
