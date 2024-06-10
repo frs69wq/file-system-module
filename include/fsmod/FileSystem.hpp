@@ -9,10 +9,10 @@
 #include <simgrid/forward.h> // sg_size_t
 #include <xbt.h>
 #include <xbt/config.h>
-#include <utility>
 #include <xbt/parse_units.hpp>
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "Partition.hpp"
@@ -46,6 +46,11 @@ namespace simgrid::fsmod {
     public:
         explicit FileSystem(std::string name, int max_num_open_files) : name_(std::move(name)), max_num_open_files_(max_num_open_files) {};
 
+
+        static std::shared_ptr<FileSystem> create(const std::string &name, int max_num_open_files = 1024);
+        static std::map<std::string, std::shared_ptr<FileSystem>, std::less<>> get_file_systems_by_actor(s4u::ActorPtr actor);
+        static void register_file_system(s4u::NetZone* netzone, std::shared_ptr<FileSystem> fs);
+
         /**
          * @brief Retrieves the file system's name
          * @return a name
@@ -56,8 +61,6 @@ namespace simgrid::fsmod {
          * @return a name
          */
         [[nodiscard]] const char* get_cname() const { return name_.c_str(); }
-
-        static std::shared_ptr<FileSystem> create(const std::string &name, int max_num_open_files = 1024);
 
         void mount_partition(const std::string &mount_point, std::shared_ptr<Storage> storage, sg_size_t size,
                              Partition::CachingScheme caching_scheme  = Partition::CachingScheme::NONE);
@@ -71,7 +74,6 @@ namespace simgrid::fsmod {
 
         void move_file(const std::string& src_full_path, const std::string& dst_full_path) const;
         void unlink_file(const std::string& full_path) const;
-
 
         void create_directory(const std::string& full_dir_path) const;
         [[nodiscard]] bool directory_exists(const std::string& full_dir_path) const;
@@ -89,8 +91,6 @@ namespace simgrid::fsmod {
         [[nodiscard]] std::vector<std::shared_ptr<Partition>> get_partitions() const;
         [[nodiscard]] std::shared_ptr<Partition> get_partition_for_path_or_null(const std::string& full_path) const;
 
-        static std::map<std::string, std::shared_ptr<FileSystem>, std::less<>> get_file_systems_by_actor(s4u::ActorPtr actor);
-        static void register_file_system(s4u::NetZone* netzone, std::shared_ptr<FileSystem> fs);
 
     private:
         [[nodiscard]] std::pair<std::shared_ptr<Partition>, std::string> find_path_at_mount_point(const std::string &full_path) const;
